@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+JAVA_INSTALL_DIR="/Library/Java/JavaVirtualMachines"
+
+JDK_7="jdk1.7.0_80.jdk"
+JDK_8="jdk1.8.0_51.jdk"
+JDK_9="jdk1.9.0.jdk"
+
+print_help() {
+  echo "Usage: jvm [command] [args]"
+  echo ""
+  echo "Commands:"
+
+  echo "  list          - list the available JDKs"
+  echo "  use [version] - use a particular JDK version"
+  echo "  fix           - forceable reset to default"
+}
+
+set_java_home() {
+  local jdkDir=${1:?}
+  if [ ! -d $JAVA_INSTALL_DIR/$jdkDir ]; then
+    echo "Unknown Java version: $jdkDir"
+    exit 1
+  elif [ -h $JAVA_HOME ]; then
+    unlink $JAVA_HOME
+    ln -s ${JAVA_INSTALL_DIR}/${jdkDir}/Contents/Home $JAVA_HOME
+    echo "Using ${jdkDir}..."
+    java -version
+  else
+    echo "JAVA_HOME symlink is broken!"
+    exit 1
+  fi
+}
+
+command=${1:-"list"}
+case $command in
+"use")
+  jdkVersion=${2:-"8"}
+  if [[ "7 8 9" =~ "${jdkVersion}" ]]; then
+    majorVersion=\$JDK_$(expr "${jdkVersion}" : '\([6-9]\)')
+    jdkDir=$(eval echo \$JDK_${majorVersion})
+    set_java_home ${jdkDir}
+  else
+    set_java_home ${jdkVersion}
+  fi
+  ;;
+"fix")
+  [ -h $JAVA_HOME ] && unlink $JAVA_HOME
+  ln -s ${JAVA_INSTALL_DIR}/${JDK_8}/Contents/Home $JAVA_HOME
+  ;;
+"def")
+  set_java_home ${JDK_8}
+  ;;
+"help")
+  print_help
+  ;;
+"list")
+  echo "=== JDK Versions"
+  ALL_JDKS="$(ls $JAVA_INSTALL_DIR)"
+  for JDK in $ALL_JDKS; do
+    if [ "$JDK_7" == "$JDK" ]; then
+      echo "7 => ${JDK}"
+    elif [ "$JDK_8" == "$JDK" ]; then
+      echo "8 => ${JDK}"
+    elif [ "$JDK_9" == "$JDK" ]; then
+      echo "9 => ${JDK}"
+    else
+      echo "  => ${JDK}"
+    fi
+  done
+  ;;
+*)
+  echo "ERROR: Unrecognized command: $command"
+  print_help
+  ;;
+esac
