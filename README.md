@@ -15,6 +15,10 @@ $ curl -s https://raw.githubusercontent.com/jkutner/jvm/master/jvm > ~/bin/jvm \
 ## Sample Usage
 
 ```sh-session
+# You need to run these first to set things up. I put these lines in my .profile
+$ export JAVA_HOME=~/local/java_home
+$ jvm fix
+
 $ jvm list
 === JDK Versions
 7 => jdk1.7.0_80.jdk
@@ -45,5 +49,5 @@ Commands:
 
 ## How it works
 
-This tool creates a symlink, `~/local/java_home`, which is set to `$JAVA_HOME`.
+This tool creates a symlink, like `~/local/java_home`, which is set to `$JAVA_HOME`.
 The tool then switches out this symlink as needed.
