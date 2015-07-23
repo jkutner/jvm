@@ -15,9 +15,10 @@ $ curl -s https://raw.githubusercontent.com/jkutner/jvm/master/jvm > ~/bin/jvm \
 ## Sample Usage
 
 ```sh-session
-# You need to run these first to set things up. I put these lines in my .profile
 $ export JAVA_HOME=~/local/java_home
 $ jvm fix
+# You need to run this commands above first to set things up. 
+# I put these lines in my .profile
 
 $ jvm list
 === JDK Versions
